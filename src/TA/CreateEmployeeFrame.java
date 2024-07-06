@@ -1,4 +1,4 @@
-package MS1;
+package TA;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,7 @@ public class CreateEmployeeFrame extends EmployeeDetailsBaseFrame implements Act
     protected void onActionButtonClicked() {
         String[] newEmployeeDetails = new String[fields.length];
         for (int i = 0; i < fields.length; i++) {
-            newEmployeeDetails[i] = fields[i].getText();
+            newEmployeeDetails[i] = "\"" + fields[i].getText().replace("\"", "\"\"") + "\"";
         }
 
         // Save new employee details to CSV

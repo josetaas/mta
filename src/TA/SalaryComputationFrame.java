@@ -1,4 +1,4 @@
-package MS1;
+package TA;
 
 import javax.swing.*;
 import com.opencsv.CSVReader;
@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class SalaryComputationFrame extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
-    private JTextField monthField;
+    private JComboBox<String> monthField;
     private JTextArea salaryDetailsTextArea;
     private JButton computeButton;
     private String employeeID;
@@ -25,7 +25,12 @@ public class SalaryComputationFrame extends JFrame implements ActionListener {
         this.employeeID = employeeDetails[0];
 
         JLabel monthLabel = new JLabel("Enter Month:");
-        monthField = new JTextField(20);
+        String[] months = {
+          "January", "February", "March", "April",
+          "May", "June", "July", "August",
+          "September", "October", "November", "December"
+        };
+        monthField = new JComboBox<>(months);
         computeButton = new JButton("Compute");
         computeButton.addActionListener(this);
 
@@ -72,13 +77,13 @@ public class SalaryComputationFrame extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == computeButton) {
-            String month = monthField.getText();
+            String month = (String) monthField.getSelectedItem();
             double basicSalary = 0.0;
             double riceSubsidy = 0.0;
             double phoneAllowance = 0.0;
             double clothingAllowance = 0.0;
 
-            try (Reader reader = new InputStreamReader(Milestone1.class.getResourceAsStream(EMPLOYEE_DATA_FILE));
+            try (Reader reader = new InputStreamReader(TA.class.getResourceAsStream(EMPLOYEE_DATA_FILE));
                  CSVReader csvReader = new CSVReaderBuilder(reader)
                          .withCSVParser(new CSVParserBuilder().withSeparator(',').build())
                          .build()) {

@@ -1,4 +1,4 @@
-package MS1;
+package TA;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -22,15 +22,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PayrollSystem extends JFrame implements ActionListener {
+    public Boolean isSuperAdmin = false;
+    public String employeeID;
+
     private static final long serialVersionUID = 1L;
     private JButton logoutButton;
     private JButton createButton;
     private JButton deleteButton;
+    private JButton searchButton;
     private JTextField searchField;
     private JTable employeeTable;
     private EmployeeTableModel tableModel;
     private static final String EMPLOYEE_DATA_FILE = "MotorPH Employee Data.csv";
-    private String employeeID;
+    private String[] employeeDetails;
 
     public PayrollSystem(String employeeID) {
         super("MotorPH Payroll System");
@@ -38,7 +42,7 @@ public class PayrollSystem extends JFrame implements ActionListener {
 
         // Search bar
         searchField = new JTextField(20);
-        JButton searchButton = new JButton("Search");
+        searchButton = new JButton("Search");
         searchButton.addActionListener(this);
 
         // Employee table
@@ -91,6 +95,18 @@ public class PayrollSystem extends JFrame implements ActionListener {
 
         // Load employee data
         loadEmployeeData();
+
+        // Check if employee is a super admin
+        employeeDetails = tableModel.getEmployeeDetailsByID(this.employeeID);
+        if (employeeDetails != null) {
+            // If position doesn't contain the string Rank and File, set as super admin
+            isSuperAdmin = !employeeDetails[11].contains("Rank and File");
+        }
+
+        if (!isSuperAdmin) {
+            createButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+        }
     }
 
     private void loadEmployeeData() {
@@ -138,9 +154,13 @@ public class PayrollSystem extends JFrame implements ActionListener {
         tableModel.addEmployee(employeeDetails);
     }
 
+    public void updateEmployeeInTable(String[] employeeDetails) {
+        tableModel.updateEmployee(employeeDetails);
+    }
+
     private void openEmployeeDetailsFrame(int row) {
         String[] employeeDetails = tableModel.getEmployeeDetails(row);
-        new EmployeeDetailsFrame(employeeDetails).setVisible(true);
+        new EmployeeDetailsFrame(employeeDetails, this).setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -171,9 +191,14 @@ public class PayrollSystem extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "Please select an employee to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
             }
-        } else if (e.getSource() == searchField) {
-            // Implement search functionality
-            JOptionPane.showMessageDialog(this, "Search functionality not implemented yet.");
+        } else if (e.getSource() == searchButton) {
+          // get input from searchField
+          String search = searchField.getText();
+          if (search.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter an employee ID to search.", "No Input", JOptionPane.WARNING_MESSAGE);
+          } else {
+            new EmployeeDetailsFrame(tableModel.getEmployeeDetailsByID(search), this).setVisible(true);
+          }
         }
     }
 
@@ -181,9 +206,30 @@ public class PayrollSystem extends JFrame implements ActionListener {
         private List<String[]> employees = new ArrayList<>();
         private String[] columnNames = { "Employee ID", "Last Name", "First Name", "Position" };
 
+        private final int[] columnIndices = { 0, 1, 2, 11 }; // Indices corresponding to Employee ID, Last Name, First Name, and Position
+
         public void addEmployee(String[] employeeDetails) {
             employees.add(employeeDetails);
             fireTableRowsInserted(employees.size() - 1, employees.size() - 1);
+        }
+
+        public String[] getEmployeeDetailsByID(String employeeID) {
+          for (String[] employee : employees) {
+              if (employee[0].replace("\"", "").equals(employeeID.replace("\"", ""))) {
+                  return employee;
+              }
+          }
+          return null;
+        }
+
+        public void updateEmployee(String[] employeeDetails) {
+            for (int i = 0; i < employees.size(); i++) {
+                if (employees.get(i)[0].replace("\"", "").equals(employeeDetails[0].replace("\"", ""))) { // Compare by Employee ID
+                    employees.set(i, employeeDetails);
+                    fireTableRowsUpdated(i, i);
+                    break;
+                }
+            }
         }
 
         public void removeEmployee(int row) {
@@ -212,7 +258,8 @@ public class PayrollSystem extends JFrame implements ActionListener {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return employees.get(rowIndex)[columnIndex];
+            String value = employees.get(rowIndex)[columnIndices[columnIndex]];
+            return value.replace("\"", ""); // Strip quotes from the value before returning
         }
     }
 }

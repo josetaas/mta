@@ -1,4 +1,4 @@
-package MS1;
+package TA;
 
 import javax.swing.*;
 import com.opencsv.CSVReader;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class Milestone1 {
+public class TA {
 
   public static void main(String[] args) {
     // Instantiate the login screen

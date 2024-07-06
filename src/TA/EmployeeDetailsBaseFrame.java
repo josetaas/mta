@@ -1,4 +1,4 @@
-package MS1;
+package TA;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +19,11 @@ public abstract class EmployeeDetailsBaseFrame extends JFrame {
         addEmployeeDetailsFields(panel, gbc);
 
         actionButton = new JButton();
-        gbc.gridx = 0;
-        gbc.gridy = 19;
-        gbc.gridwidth = 2;
+        gbc.gridx = 1; // Change to column 1
+        gbc.gridy = 19; // Ensure it's in the 19th row
+        gbc.gridwidth = 1; // Change to occupy one cell
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.SOUTHEAST; // Change anchor to southeast
         panel.add(actionButton, gbc);
 
         JScrollPane scrollPane = new JScrollPane(panel);

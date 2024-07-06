@@ -10,7 +10,7 @@ mkdir -p bin
 cp -r resources/* bin/
 
 # Compile the Java source files in the src directory
-javac -cp "$CLASSPATH" -d bin src/MS1/*.java
+javac -cp "$CLASSPATH" -d bin src/TA/*.java
 
 # Check if the compilation succeeded
 if [ $? -eq 0 ]; then
